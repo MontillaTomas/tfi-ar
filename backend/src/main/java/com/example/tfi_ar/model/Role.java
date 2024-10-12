@@ -11,22 +11,56 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public enum Role {
-    USER(Collections.emptySet()),
-    MANAGER(
-            Set.of(
-                    Permission.MANAGER_READ,
-                    Permission.MANAGER_WRITE
-            )
-    ),
-    ADMIN(
-            Set.of(
-                    Permission.ADMIN_READ,
-                    Permission.ADMIN_WRITE,
-                    Permission.MANAGER_READ,
-                    Permission.MANAGER_WRITE
-            )
-    )
-    ;
+    HR_MODULE_USER(Set.of(
+            Permission.HR_MODULE_USER_READ,
+            Permission.HR_MODULE_USER_WRITE,
+            Permission.HR_MODULE_USER_DELETE,
+            Permission.HR_MODULE_USER_UPDATE
+    )),
+    SALES_MODULE_USER(Set.of(
+            Permission.SALES_MODULE_USER_READ,
+            Permission.SALES_MODULE_USER_WRITE,
+            Permission.SALES_MODULE_USER_DELETE,
+            Permission.SALES_MODULE_USER_UPDATE
+    )),
+    SUPPLIER_MODULE_USER(Set.of(
+            Permission.SUPPLIER_MODULE_USER_READ,
+            Permission.SUPPLIER_MODULE_USER_WRITE,
+            Permission.SUPPLIER_MODULE_USER_DELETE,
+            Permission.SUPPLIER_MODULE_USER_UPDATE
+    )),
+    CUSTOMER_MODULE_USER(Set.of(
+            Permission.CUSTOMER_MODULE_USER_READ,
+            Permission.CUSTOMER_MODULE_USER_WRITE,
+            Permission.CUSTOMER_MODULE_USER_DELETE,
+            Permission.CUSTOMER_MODULE_USER_UPDATE
+    )),
+    ADMIN(Set.of(
+            Permission.HR_MODULE_USER_READ,
+            Permission.HR_MODULE_USER_WRITE,
+            Permission.HR_MODULE_USER_DELETE,
+            Permission.HR_MODULE_USER_UPDATE,
+
+            Permission.SALES_MODULE_USER_READ,
+            Permission.SALES_MODULE_USER_WRITE,
+            Permission.SALES_MODULE_USER_DELETE,
+            Permission.SALES_MODULE_USER_UPDATE,
+
+            Permission.SUPPLIER_MODULE_USER_READ,
+            Permission.SUPPLIER_MODULE_USER_WRITE,
+            Permission.SUPPLIER_MODULE_USER_DELETE,
+            Permission.SUPPLIER_MODULE_USER_UPDATE,
+
+            Permission.CUSTOMER_MODULE_USER_READ,
+            Permission.CUSTOMER_MODULE_USER_WRITE,
+            Permission.CUSTOMER_MODULE_USER_DELETE,
+            Permission.CUSTOMER_MODULE_USER_UPDATE,
+
+            Permission.ADMIN_READ,
+            Permission.ADMIN_WRITE,
+            Permission.ADMIN_DELETE,
+            Permission.ADMIN_UPDATE
+    ));
 
     @Getter
     private final Set<Permission> permissions;
