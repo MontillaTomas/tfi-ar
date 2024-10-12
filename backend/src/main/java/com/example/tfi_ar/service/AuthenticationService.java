@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+    @NonNull HttpServletRequest request;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -33,8 +35,8 @@ public class AuthenticationService {
                 .role(request.getRole())
                 .build();
         userRepository.save(user);
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var accessToken = jwtService.generateAccessToken(user, user.getId());
+        var refreshToken = jwtService.generateRefreshToken(user, user.getId());
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -52,8 +54,8 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        var jwtToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var jwtToken = jwtService.generateAccessToken(user, user.getId());
+        var refreshToken = jwtService.generateRefreshToken(user, user.getId());
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -78,7 +80,7 @@ public class AuthenticationService {
             var user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             if(jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateAccessToken(user);
+                var accessToken = jwtService.generateAccessToken(user, user.getId());
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
@@ -87,5 +89,10 @@ public class AuthenticationService {
             }
         }
 
+    }
+
+    public Integer getUserIdFromToken() {
+        String jwt = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
+        return jwtService.extractUserId(jwt);
     }
 }

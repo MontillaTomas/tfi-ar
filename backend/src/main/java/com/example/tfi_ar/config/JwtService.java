@@ -6,6 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +35,10 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateAccessToken(new HashMap<>(), userDetails);
+    public String generateAccessToken(UserDetails userDetails, Integer userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        return generateAccessToken(claims, userDetails);
     }
 
     public String generateAccessToken(
@@ -44,8 +48,10 @@ public class JwtService {
         return buildToken(extraClaims, userDetails, accessTokenExpiration);
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshTokenExpiration);
+    public String generateRefreshToken(UserDetails userDetails, Integer userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        return buildToken(claims, userDetails, refreshTokenExpiration);
     }
 
     private String buildToken(
@@ -83,6 +89,10 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
+    }
+
+    public Integer extractUserId(String jwt) {
+        return extractClaim(jwt, claims -> claims.get("userId", Integer.class));
     }
 
     private Key getSigningKey() {
