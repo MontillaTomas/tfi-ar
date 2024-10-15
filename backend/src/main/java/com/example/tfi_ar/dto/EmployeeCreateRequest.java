@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeRequest {
+public class EmployeeCreateRequest {
     private Integer dni;
     private String name;
     @JsonProperty("birth_date")

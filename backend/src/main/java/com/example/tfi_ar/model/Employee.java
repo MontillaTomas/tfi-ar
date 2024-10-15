@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "employee")
-@SQLDelete(sql = "UPDATE employee SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class Employee {
     @Id

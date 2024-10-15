@@ -1,11 +1,9 @@
 package com.example.tfi_ar.controller;
 
-import com.example.tfi_ar.dto.EmployeeRequest;
+import com.example.tfi_ar.dto.EmployeeCreateRequest;
 import com.example.tfi_ar.dto.EmployeeResponse;
-import com.example.tfi_ar.exception.DniAlreadyInUseException;
-import com.example.tfi_ar.exception.EmailAlreadyInUseException;
-import com.example.tfi_ar.exception.UserAlreadyInUseException;
-import com.example.tfi_ar.exception.UserNotFoundException;
+import com.example.tfi_ar.dto.EmployeeUpdateRequest;
+import com.example.tfi_ar.exception.*;
 import com.example.tfi_ar.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,17 +19,28 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    public EmployeeResponse create(@RequestBody EmployeeRequest request) throws UserNotFoundException, UserAlreadyInUseException, EmailAlreadyInUseException, DniAlreadyInUseException {
+    public EmployeeResponse create(@RequestBody EmployeeCreateRequest request) throws UserNotFoundException, UserAlreadyInUseException, EmailAlreadyInUseException, DniAlreadyInUseException {
         return employeeService.create(request);
     }
 
     @GetMapping("/{id}")
-    public EmployeeResponse get(@PathVariable Integer id) throws UserNotFoundException {
+    public EmployeeResponse get(@PathVariable Integer id) throws EmployeeNotFoundException {
         return employeeService.get(id);
     }
 
     @GetMapping
     public List<EmployeeResponse> getAll() {
         return employeeService.getAll();
+    }
+
+
+    @PutMapping("/{id}")
+    public EmployeeResponse update(@PathVariable Integer id, @RequestBody EmployeeUpdateRequest request) throws EmployeeNotFoundException, UserNotFoundException, EmailAlreadyInUseException, DniAlreadyInUseException, UserAlreadyInUseException {
+        return employeeService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) throws UserNotFoundException, EmployeeNotFoundException {
+        employeeService.delete(id);
     }
 }
