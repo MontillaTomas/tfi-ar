@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeRequest {
-    private String dni;
+    private Integer dni;
     private String name;
     @JsonProperty("birth_date")
     private LocalDate birthDate;
@@ -21,6 +21,8 @@ public class EmployeeRequest {
     private String phone;
     @JsonProperty("start_date")
     private LocalDate startDate;
+    @JsonProperty("end_date")
+    private LocalDate endDate;
     @JsonProperty("user_id")
     private Integer userId;
 }

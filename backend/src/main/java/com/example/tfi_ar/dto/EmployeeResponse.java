@@ -1,6 +1,7 @@
 package com.example.tfi_ar.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeResponse {
-    private String dni;
+    private Integer id;
+    private Integer dni;
     private String name;
     @JsonProperty("birth_date")
     private LocalDate birthDate;
@@ -21,6 +23,8 @@ public class EmployeeResponse {
     private String phone;
     @JsonProperty("start_date")
     private LocalDate startDate;
+    @JsonProperty("end_date")
+    private LocalDate endDate;
     @JsonProperty("user_id")
     private Integer userId;
 }

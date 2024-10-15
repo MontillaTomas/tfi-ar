@@ -23,14 +23,14 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Column(unique = true)
-    private String dni;
+    private Integer dni;
     private String name;
     @Column(name = "birth_date")
     private LocalDate birthDate;
     @Column(unique = true)
     private String email;
     private String phone;
-    @Column(name = "start_date", updatable = false)
+    @Column(name = "start_date")
     private LocalDate startDate;
     @Column(name = "end_date")
     private LocalDate endDate;
@@ -38,7 +38,7 @@ public class Employee {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false)
+    @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by")
