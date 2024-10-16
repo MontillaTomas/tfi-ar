@@ -4,6 +4,7 @@ import com.example.tfi_ar.dto.EmployeeCreateRequest;
 import com.example.tfi_ar.dto.EmployeeResponse;
 import com.example.tfi_ar.dto.EmployeeUpdateRequest;
 import com.example.tfi_ar.exception.*;
+import com.example.tfi_ar.model.Address;
 import com.example.tfi_ar.model.Employee;
 import com.example.tfi_ar.model.User;
 import com.example.tfi_ar.repository.EmployeeRepository;
@@ -19,8 +20,9 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
+    private final AddressService addressService;
 
-    public EmployeeResponse create(EmployeeCreateRequest request) throws EmailAlreadyInUseException, UserAlreadyInUseException, UserNotFoundException, DniAlreadyInUseException {
+    public EmployeeResponse create(EmployeeCreateRequest request) throws EmailAlreadyInUseException, UserAlreadyInUseException, UserNotFoundException, DniAlreadyInUseException, CityNotFoundException {
         if (employeeRepository.findByDni(request.getDni()).isPresent()) {
             throw new DniAlreadyInUseException("Dni already in use");
         }
@@ -39,6 +41,8 @@ public class EmployeeService {
         User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        Address address = addressService.create(request.getAddressRequest());
+
         var employee = Employee.builder()
                 .dni(request.getDni())
                 .name(request.getName())
@@ -46,56 +50,27 @@ public class EmployeeService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .user(employeeUser)
+                .address(address)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .createdBy(creatorUser)
                 .build();
 
-        Integer employeeId = employeeRepository.save(employee).getId();
+        Employee savedEmployee = employeeRepository.save(employee);
 
-        return EmployeeResponse.builder()
-                .id(employeeId)
-                .dni(request.getDni())
-                .name(request.getName())
-                .birthDate(request.getBirthDate())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .userId(employee.getUser().getId())
-                .build();
+        return new EmployeeResponse(savedEmployee);
     }
 
     public EmployeeResponse get(Integer id) throws EmployeeNotFoundException {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
-        return EmployeeResponse.builder()
-                .id(employee.getId())
-                .dni(employee.getDni())
-                .name(employee.getName())
-                .birthDate(employee.getBirthDate())
-                .email(employee.getEmail())
-                .phone(employee.getPhone())
-                .startDate(employee.getStartDate())
-                .endDate(employee.getEndDate())
-                .userId(employee.getUser().getId())
-                .build();
+        return new EmployeeResponse(employee);
     }
 
     public List<EmployeeResponse> getAll() {
         return employeeRepository.findAll().stream()
-                .map(employee -> EmployeeResponse.builder()
-                        .id(employee.getId())
-                        .dni(employee.getDni())
-                        .name(employee.getName())
-                        .birthDate(employee.getBirthDate())
-                        .email(employee.getEmail())
-                        .phone(employee.getPhone())
-                        .startDate(employee.getStartDate())
-                        .endDate(employee.getEndDate())
-                        .userId(employee.getUser().getId())
-                        .build())
+                .map(EmployeeResponse::new)
                 .toList();
     }
 
@@ -112,7 +87,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public EmployeeResponse update(Integer id, EmployeeUpdateRequest request) throws EmployeeNotFoundException, DniAlreadyInUseException, EmailAlreadyInUseException, UserAlreadyInUseException, UserNotFoundException {
+    public EmployeeResponse update(Integer id, EmployeeUpdateRequest request) throws EmployeeNotFoundException, DniAlreadyInUseException, EmailAlreadyInUseException, UserAlreadyInUseException, UserNotFoundException, CityNotFoundException {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
@@ -133,6 +108,8 @@ public class EmployeeService {
         User updateUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        addressService.update(employee.getAddress().getId(), request.getAddressRequest());
+
         if(request.getDni() != null) employee.setDni(request.getDni());
         if(request.getName() != null) employee.setName(request.getName());
         if(request.getBirthDate() != null) employee.setBirthDate(request.getBirthDate());
@@ -141,20 +118,11 @@ public class EmployeeService {
         if(request.getStartDate() != null) employee.setStartDate(request.getStartDate());
         if(request.getEndDate() != null) employee.setEndDate(request.getEndDate());
         if(request.getUserId() != null) employee.setUser(employeeUser);
+
         employee.setUpdatedBy(updateUser);
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
-        return EmployeeResponse.builder()
-                .id(updatedEmployee.getId())
-                .dni(updatedEmployee.getDni())
-                .name(updatedEmployee.getName())
-                .birthDate(updatedEmployee.getBirthDate())
-                .email(updatedEmployee.getEmail())
-                .phone(updatedEmployee.getPhone())
-                .startDate(updatedEmployee.getStartDate())
-                .endDate(updatedEmployee.getEndDate())
-                .userId(updatedEmployee.getUser().getId())
-                .build();
+        return new EmployeeResponse(updatedEmployee);
     }
 }

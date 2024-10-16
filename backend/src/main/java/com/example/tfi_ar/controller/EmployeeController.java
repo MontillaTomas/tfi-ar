@@ -19,7 +19,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    public EmployeeResponse create(@RequestBody EmployeeCreateRequest request) throws UserNotFoundException, UserAlreadyInUseException, EmailAlreadyInUseException, DniAlreadyInUseException {
+    public EmployeeResponse create(@RequestBody EmployeeCreateRequest request) throws UserNotFoundException, UserAlreadyInUseException, EmailAlreadyInUseException, DniAlreadyInUseException, CityNotFoundException {
         return employeeService.create(request);
     }
 
@@ -35,7 +35,7 @@ public class EmployeeController {
 
 
     @PutMapping("/{id}")
-    public EmployeeResponse update(@PathVariable Integer id, @RequestBody EmployeeUpdateRequest request) throws EmployeeNotFoundException, UserNotFoundException, EmailAlreadyInUseException, DniAlreadyInUseException, UserAlreadyInUseException {
+    public EmployeeResponse update(@PathVariable Integer id, @RequestBody EmployeeUpdateRequest request) throws EmployeeNotFoundException, UserNotFoundException, EmailAlreadyInUseException, DniAlreadyInUseException, UserAlreadyInUseException, CityNotFoundException {
         return employeeService.update(id, request);
     }
 
