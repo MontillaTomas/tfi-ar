@@ -19,6 +19,8 @@ public class EmployeeCreateRequest {
     private LocalDate birthDate;
     private String email;
     private String phone;
+    @JsonProperty("address")
+    private AddressRequest addressRequest;
     @JsonProperty("start_date")
     private LocalDate startDate;
     @JsonProperty("end_date")
