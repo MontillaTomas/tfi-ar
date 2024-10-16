@@ -28,6 +28,9 @@ public class Employee {
     @Column(unique = true)
     private String email;
     private String phone;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
     @Column(name = "start_date")
     private LocalDate startDate;
     @Column(name = "end_date")
