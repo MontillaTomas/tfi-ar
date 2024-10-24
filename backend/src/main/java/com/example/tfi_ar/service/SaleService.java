@@ -1,6 +1,6 @@
 package com.example.tfi_ar.service;
 
-import com.example.tfi_ar.dto.SaleCreateRequest;
+import com.example.tfi_ar.dto.SaleRequest;
 import com.example.tfi_ar.dto.SaleResponse;
 import com.example.tfi_ar.exception.SaleNotFoundException;
 import com.example.tfi_ar.exception.UserNotFoundException;
@@ -20,7 +20,7 @@ public class SaleService {
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
 
-    public SaleResponse create(SaleCreateRequest request) throws UserNotFoundException {
+    public SaleResponse create(SaleRequest request) throws UserNotFoundException {
         User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 

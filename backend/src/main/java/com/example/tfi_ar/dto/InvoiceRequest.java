@@ -12,10 +12,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoiceCreateRequest {
+public class InvoiceRequest {
     private LocalDate issueDate;
     private LocalDate dueDate;
     private String paymentMethod;
     private String observation;
-    private List<InvoiceDetailCreateRequest> details;
+    private List<InvoiceDetailRequest> details;
 }

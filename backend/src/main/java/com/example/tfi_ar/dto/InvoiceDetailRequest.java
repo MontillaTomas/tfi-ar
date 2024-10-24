@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoiceDetailCreateRequest {
+public class InvoiceDetailRequest {
     private String description;
     private Double quantity;
     private Double unitPrice;

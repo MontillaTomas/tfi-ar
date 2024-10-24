@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaleCreateRequest {
+public class SaleRequest {
     private LocalDateTime saleDate;
     private String observation;
-    private InvoiceCreateRequest invoice;
+    private InvoiceRequest invoice;
 }

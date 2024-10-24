@@ -1,6 +1,6 @@
 package com.example.tfi_ar.controller;
 
-import com.example.tfi_ar.dto.SaleCreateRequest;
+import com.example.tfi_ar.dto.SaleRequest;
 import com.example.tfi_ar.dto.SaleResponse;
 import com.example.tfi_ar.exception.SaleNotFoundException;
 import com.example.tfi_ar.exception.UserNotFoundException;
@@ -21,7 +21,7 @@ public class SaleController {
     private final SaleService saleService;
 
     @PostMapping
-    public ResponseEntity<SaleResponse> create(@RequestBody SaleCreateRequest request) throws UserNotFoundException {
+    public ResponseEntity<SaleResponse> create(@RequestBody SaleRequest request) throws UserNotFoundException {
         return ResponseEntity.status(HttpStatus.CREATED).body(saleService.create(request));
     }
 
