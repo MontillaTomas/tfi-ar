@@ -35,6 +35,11 @@ public class SaleController {
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getAll());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<SaleResponse> update(@PathVariable Integer id, @RequestBody SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.update(id, request));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) throws SaleNotFoundException, UserNotFoundException {
         saleService.delete(id);

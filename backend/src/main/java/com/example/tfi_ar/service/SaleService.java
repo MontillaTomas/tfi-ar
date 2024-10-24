@@ -75,6 +75,13 @@ public class SaleService {
         return new SaleResponse(sale);
     }
 
+    private void deleteInvoiceDetails(Invoice invoice, User updaterUser) {
+        invoice.getDetails().forEach(detail -> {
+            detail.setDeleted(true);
+            detail.setUpdatedBy(updaterUser);
+        });
+    }
+
     public void delete(Integer id) throws SaleNotFoundException, UserNotFoundException {
         Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
 
@@ -83,10 +90,7 @@ public class SaleService {
 
         // Set deleted to true to all invoice details
 
-        sale.getInvoice().getDetails().forEach(detail -> {
-            detail.setDeleted(true);
-            detail.setUpdatedBy(updaterUser);
-        });
+        deleteInvoiceDetails(sale.getInvoice(), updaterUser);
 
         // Set deleted to true to invoice
 
@@ -99,5 +103,48 @@ public class SaleService {
         sale.setDeleted(true);
 
         saleRepository.save(sale);
+    }
+
+    public SaleResponse update(Integer id, SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
+        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+
+        User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        // Delete all invoice details
+
+        deleteInvoiceDetails(sale.getInvoice(), updaterUser);
+
+        // Create new invoice details
+
+        List<InvoiceDetail> details = new ArrayList<>();
+        request.getInvoice().getDetails().forEach(detail -> {
+            details.add(
+                    InvoiceDetail.builder()
+                            .description(detail.getDescription())
+                            .quantity(detail.getQuantity())
+                            .unitPrice(detail.getUnitPrice())
+                            .invoice(sale.getInvoice())
+                            .createdBy(updaterUser)
+                            .build()
+            );
+        });
+
+        // Update invoice
+
+        sale.getInvoice().setIssueDate(request.getInvoice().getIssueDate());
+        sale.getInvoice().setDueDate(request.getInvoice().getDueDate());
+        sale.getInvoice().setPaymentMethod(request.getInvoice().getPaymentMethod());
+        sale.getInvoice().setObservation(request.getInvoice().getObservation());
+        sale.getInvoice().setDetails(details);
+        sale.getInvoice().setUpdatedBy(updaterUser);
+
+        // Update sale
+
+        sale.setSaleDate(request.getSaleDate());
+        sale.setObservation(request.getObservation());
+        sale.setUpdatedBy(updaterUser);
+
+        return new SaleResponse(saleRepository.save(sale));
     }
 }
