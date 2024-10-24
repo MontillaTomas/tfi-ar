@@ -74,4 +74,30 @@ public class SaleService {
         Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
         return new SaleResponse(sale);
     }
+
+    public void delete(Integer id) throws SaleNotFoundException, UserNotFoundException {
+        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+
+        User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        // Set deleted to true to all invoice details
+
+        sale.getInvoice().getDetails().forEach(detail -> {
+            detail.setDeleted(true);
+            detail.setUpdatedBy(updaterUser);
+        });
+
+        // Set deleted to true to invoice
+
+        sale.getInvoice().setDeleted(true);
+        sale.getInvoice().setUpdatedBy(updaterUser);
+
+        // Set deleted to true to sale
+
+        sale.setUpdatedBy(updaterUser);
+        sale.setDeleted(true);
+
+        saleRepository.save(sale);
+    }
 }

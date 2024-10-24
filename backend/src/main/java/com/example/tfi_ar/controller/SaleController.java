@@ -34,4 +34,10 @@ public class SaleController {
     public ResponseEntity<List<SaleResponse>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getAll());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) throws SaleNotFoundException, UserNotFoundException {
+        saleService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
