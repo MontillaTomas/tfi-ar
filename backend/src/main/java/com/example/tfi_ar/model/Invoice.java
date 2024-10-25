@@ -32,6 +32,7 @@ public class Invoice {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Enumerated(EnumType.STRING)
     private InvoiceState state;
 
     @Column(name = "payment_method")
