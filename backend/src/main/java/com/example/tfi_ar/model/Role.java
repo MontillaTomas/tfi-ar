@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,6 +34,13 @@ public enum Role {
             Permission.CUSTOMER_MODULE_USER_DELETE,
             Permission.CUSTOMER_MODULE_USER_UPDATE
     )),
+    CLIENT_MODULE_USER(Set.of(
+            Permission.CLIENT_MODULE_USER_READ,
+            Permission.CLIENT_MODULE_USER_WRITE,
+            Permission.CLIENT_MODULE_USER_DELETE,
+            Permission.CLIENT_MODULE_USER_UPDATE
+    )),
+
     ADMIN(Set.of(
             Permission.HR_MODULE_USER_READ,
             Permission.HR_MODULE_USER_WRITE,
@@ -55,6 +61,12 @@ public enum Role {
             Permission.CUSTOMER_MODULE_USER_WRITE,
             Permission.CUSTOMER_MODULE_USER_DELETE,
             Permission.CUSTOMER_MODULE_USER_UPDATE,
+
+            Permission.CLIENT_MODULE_USER_READ,
+            Permission.CLIENT_MODULE_USER_WRITE,
+            Permission.CLIENT_MODULE_USER_DELETE,
+            Permission.CLIENT_MODULE_USER_UPDATE,
+
 
             Permission.ADMIN_READ,
             Permission.ADMIN_WRITE,
