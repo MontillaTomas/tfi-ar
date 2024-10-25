@@ -29,7 +29,13 @@ public enum Permission {
     CUSTOMER_MODULE_USER_READ("customer_module_user:read"),
     CUSTOMER_MODULE_USER_WRITE("customer_module_user:write"),
     CUSTOMER_MODULE_USER_DELETE("customer_module_user:delete"),
-    CUSTOMER_MODULE_USER_UPDATE("customer_module_user:update");
+    CUSTOMER_MODULE_USER_UPDATE("customer_module_user:update"),
+
+    CLIENT_MODULE_USER_READ("client_module_user:read"),
+    CLIENT_MODULE_USER_WRITE("client_module_user:write"),
+    CLIENT_MODULE_USER_DELETE("client_module_user:delete"),
+    CLIENT_MODULE_USER_UPDATE("client_module_user:update");
+
 
     private final String permission;
 }
