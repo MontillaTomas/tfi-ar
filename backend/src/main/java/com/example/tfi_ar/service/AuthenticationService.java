@@ -4,6 +4,7 @@ import com.example.tfi_ar.config.JwtService;
 import com.example.tfi_ar.dto.AuthenticationRequest;
 import com.example.tfi_ar.dto.AuthenticationResponse;
 import com.example.tfi_ar.dto.RegisterRequest;
+import com.example.tfi_ar.exception.EmailAlreadyInUseException;
 import com.example.tfi_ar.model.User;
 import com.example.tfi_ar.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +29,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) throws EmailAlreadyInUseException {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new EmailAlreadyInUseException("Email already in use");
+        }
+
         var user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

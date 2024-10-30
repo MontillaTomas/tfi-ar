@@ -3,6 +3,7 @@ package com.example.tfi_ar.controller;
 import com.example.tfi_ar.dto.AuthenticationRequest;
 import com.example.tfi_ar.dto.AuthenticationResponse;
 import com.example.tfi_ar.dto.RegisterRequest;
+import com.example.tfi_ar.exception.EmailAlreadyInUseException;
 import com.example.tfi_ar.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +25,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
-    ) {
+    ) throws EmailAlreadyInUseException {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
