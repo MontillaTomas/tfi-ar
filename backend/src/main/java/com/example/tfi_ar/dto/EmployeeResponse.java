@@ -39,6 +39,8 @@ public class EmployeeResponse {
         this.address = new AddressResponse(employee.getAddress());
         this.startDate = employee.getStartDate();
         this.endDate = employee.getEndDate();
-        this.userId = employee.getUser().getId();
+        this.userId = employee.getUser() == null
+                    ? null
+                    : employee.getUser().getId();
     }
 }

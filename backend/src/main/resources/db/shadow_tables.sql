@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS employee_log (
     start_date DATE,
     end_date DATE,
     address_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER,
     deleted BOOLEAN NOT NULL,
     action CHAR(1) NOT NULL,
     action_by INTEGER NOT NULL,
