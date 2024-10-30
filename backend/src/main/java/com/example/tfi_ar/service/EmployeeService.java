@@ -31,30 +31,25 @@ public class EmployeeService {
             throw new EmailAlreadyInUseException("Email already in use");
         }
 
-        if (employeeRepository.findByUserId(request.getUserId()).isPresent()) {
-            throw new UserAlreadyInUseException("User already in use");
-        }
+        User employeeUser = null;
 
-        User employeeUser = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (request.getUserId() != null) {
+            if (employeeRepository.findByUserId(request.getUserId()).isPresent()) {
+                throw new UserAlreadyInUseException("User already in use");
+            }
+
+             employeeUser = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        }
 
         User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Address address = addressService.create(request.getAddressRequest());
 
-        var employee = Employee.builder()
-                .dni(request.getDni())
-                .name(request.getName())
-                .birthDate(request.getBirthDate())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .user(employeeUser)
-                .address(address)
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .createdBy(creatorUser)
-                .build();
+        Employee employee = employeeUser == null
+                ? new Employee(request, address, creatorUser)
+                : new Employee(request, address, employeeUser, creatorUser);
 
         Employee savedEmployee = employeeRepository.save(employee);
 
@@ -82,6 +77,9 @@ public class EmployeeService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         employee.setUpdatedBy(updateUser);
+        employee.getAddress().setDeleted(true);
+        employee.getAddress().setUpdatedBy(updateUser);
+        employee.setUser(null);
         employee.setDeleted(true);
 
         employeeRepository.save(employee);
