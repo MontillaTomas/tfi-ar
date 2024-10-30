@@ -46,13 +46,13 @@ public class AddressService {
         City city = cityRepository.findById(addressRequest.getCityId())
                 .orElseThrow(() -> new CityNotFoundException("City not found"));
 
-        if(addressRequest.getStreet() != null) address.setStreet(addressRequest.getStreet());
-        if(addressRequest.getNumber() != null) address.setNumber(addressRequest.getNumber());
-        if(addressRequest.getFloor() != null) address.setFloor(addressRequest.getFloor());
-        if(addressRequest.getApartment() != null) address.setApartment(addressRequest.getApartment());
-        if(addressRequest.getPostalCode() != null) address.setPostalCode(addressRequest.getPostalCode());
-        if(addressRequest.getCityId() != null) address.setCity(city);
-        if(addressRequest.getObservations() != null) address.setObservations(addressRequest.getObservations());
+        address.setStreet(addressRequest.getStreet());
+        address.setNumber(addressRequest.getNumber());
+        address.setFloor(addressRequest.getFloor());
+        address.setApartment(addressRequest.getApartment());
+        address.setPostalCode(addressRequest.getPostalCode());
+        address.setCity(city);
+        address.setObservations(addressRequest.getObservations());
 
         User updateUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));

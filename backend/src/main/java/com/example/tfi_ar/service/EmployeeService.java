@@ -97,26 +97,25 @@ public class EmployeeService {
             throw new EmailAlreadyInUseException("Email already in use");
         }
 
-        User employeeUser = null;
-        if(request.getUserId() != null) {
-             employeeUser = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
-        }
-
         User updateUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        User employeeUser = null;
+        if(request.getUserId() != null) {
+            employeeUser = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        }
+
         addressService.update(employee.getAddress().getId(), request.getAddressRequest());
 
-        if(request.getDni() != null) employee.setDni(request.getDni());
-        if(request.getName() != null) employee.setName(request.getName());
-        if(request.getBirthDate() != null) employee.setBirthDate(request.getBirthDate());
-        if(request.getEmail() != null) employee.setEmail(request.getEmail());
-        if(request.getPhone() != null) employee.setPhone(request.getPhone());
-        if(request.getStartDate() != null) employee.setStartDate(request.getStartDate());
-        if(request.getEndDate() != null) employee.setEndDate(request.getEndDate());
-        if(request.getUserId() != null) employee.setUser(employeeUser);
-
+        employee.setDni(request.getDni());
+        employee.setName(request.getName());
+        employee.setBirthDate(request.getBirthDate());
+        employee.setEmail(request.getEmail());
+        employee.setPhone(request.getPhone());
+        employee.setStartDate(request.getStartDate());
+        employee.setEndDate(request.getEndDate());
+        employee.setUser(employeeUser);
         employee.setUpdatedBy(updateUser);
 
         Employee updatedEmployee = employeeRepository.save(employee);
