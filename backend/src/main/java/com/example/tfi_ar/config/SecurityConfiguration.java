@@ -28,21 +28,8 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeRequests()
                 .requestMatchers("/api/v1/auth/**").permitAll()
-
-                //.requestMatchers("/api/v1/management/**")
-                //.hasAnyRole(ADMIN.name(), MANAGER.name())
                 .requestMatchers(HttpMethod.GET, "/api/v1/management/**").hasAnyAuthority(Permission.ADMIN_READ.getPermission())
                 .requestMatchers(HttpMethod.POST, "/api/v1/management/**").hasAnyAuthority(Permission.ADMIN_WRITE.getPermission())
-
-                //.requestMatchers("/api/v1/admin/**")
-                //.hasRole(ADMIN.name())
-                /*
-                .requestMatchers(HttpMethod.GET, "/api/v1/admin/**")
-                .hasAuthority(ADMIN_READ.getPermission())
-                .requestMatchers(HttpMethod.POST, "/api/v1/admin/**")
-                .hasAuthority(ADMIN_WRITE.getPermission())
-                */
-
                 .anyRequest()
                 .authenticated()
                 .and()
