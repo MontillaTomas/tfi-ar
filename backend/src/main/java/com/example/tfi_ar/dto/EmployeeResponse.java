@@ -1,7 +1,6 @@
 package com.example.tfi_ar.dto;
 
 import com.example.tfi_ar.model.Employee;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,16 +16,12 @@ public class EmployeeResponse {
     private Integer id;
     private Integer dni;
     private String name;
-    @JsonProperty("birth_date")
     private LocalDate birthDate;
     private String email;
     private String phone;
     private AddressResponse address;
-    @JsonProperty("start_date")
     private LocalDate startDate;
-    @JsonProperty("end_date")
     private LocalDate endDate;
-    @JsonProperty("user_id")
     private Integer userId;
 
     public EmployeeResponse(Employee employee) {
