@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -26,9 +28,12 @@ public class SupplierResponse {
         this.id = supplier.getId();
         this.cuit = supplier.getCuit();
         this.email = supplier.getEmail();
+        this.name = supplier.getName();
         this.phone = supplier.getPhone();
         this.address = new AddressResponse(supplier.getAddress());
-        this.paymentConditions = supplier.getPaymentConditions().stream()
+        this.paymentConditions = Optional.ofNullable(supplier.getPaymentConditions())
+                .orElseGet(Collections::emptyList)
+                .stream()
                 .map(PaymentConditionResponse::new)
                 .collect(Collectors.toList());
     }
