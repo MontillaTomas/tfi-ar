@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/suppliers")
@@ -23,5 +22,26 @@ public class SupplierController {
     @PostMapping
     public ResponseEntity<SupplierResponse> create(@RequestBody SupplierRequest request) throws CuitAlreadyInUseException, EmailAlreadyInUseException, UserNotFoundException, CityNotFoundException, NameAlreadyInUseException {
         return ResponseEntity.status(HttpStatus.CREATED).body(supplierService.create(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SupplierResponse> get(@PathVariable Integer id) throws SupplierNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.get(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SupplierResponse>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.getAll());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) throws SupplierNotFoundException, UserNotFoundException {
+        supplierService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SupplierResponse> update(@PathVariable Integer id, @RequestBody SupplierRequest request) throws SupplierNotFoundException, CuitAlreadyInUseException, EmailAlreadyInUseException, CityNotFoundException, NameAlreadyInUseException, UserNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.update(id, request));
     }
 }
