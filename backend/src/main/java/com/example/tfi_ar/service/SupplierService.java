@@ -124,7 +124,10 @@ public class SupplierService {
         Integer supplierAddressId = supplier.getAddress().getId();
         addressService.update(supplierAddressId, request.getAddress());
 
-        supplier.getPaymentConditions().forEach(paymentCondition -> paymentCondition.setDeleted(true));
+        supplier.getPaymentConditions().forEach(paymentCondition -> {
+            paymentCondition.setDeleted(true);
+            paymentCondition.setUpdatedBy(updaterUser);
+        });
 
         List<PaymentCondition> paymentConditions = new ArrayList<>();
         request.getPaymentConditions().forEach(paymentCondition -> {

@@ -19,11 +19,18 @@ public class PaymentCondition {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(name = "payment_method")
     private String paymentMethod;
+
+    @Column(name = "payment_term_days")
     private Integer paymentTermDays;
+
     private String currency;
     private String bank;
+
+    @Column(name = "account_number")
     private String accountNumber;
+
     private String observation;
 
     @ManyToOne(fetch = FetchType.LAZY)
