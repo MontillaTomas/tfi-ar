@@ -209,4 +209,56 @@ public class SupplierService {
                 .map(PurchaseResponse::new)
                 .toList();
     }
+
+    public void deletePurchase(Integer supplierId, Integer id) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException {
+        User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        Purchase purchase = supplier.getPurchases()
+                .stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
+
+        purchase.setDeleted(true);
+        purchase.setUpdatedBy(updaterUser);
+        if(purchase.getPurchaseRating() != null) {
+            purchase.getPurchaseRating().setDeleted(true);
+            purchase.getPurchaseRating().setUpdatedBy(updaterUser);
+        }
+
+        purchaseRepository.save(purchase);
+    }
+
+    public PurchaseResponse updatePurchase(Integer supplierId, Integer id, PurchaseRequest request) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException, PaymentConditionNotFoundException {
+        User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        Purchase purchase = supplier.getPurchases()
+                .stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
+
+        PaymentCondition paymentCondition = supplier.getPaymentConditions().stream()
+                .filter(pc -> pc.getId().equals(request.getPaymentConditionId()))
+                .findFirst()
+                .orElseThrow(() -> new PaymentConditionNotFoundException("Payment condition not found"));
+
+        purchase.setPurchaseDate(request.getPurchaseDate());
+        purchase.setTotal(request.getTotal());
+        purchase.setObservation(request.getObservation());
+        purchase.setPaymentCondition(paymentCondition);
+        purchase.setUpdatedBy(updaterUser);
+
+        Purchase savedPurchase = purchaseRepository.save(purchase);
+
+        return new PurchaseResponse(savedPurchase);
+    }
 }

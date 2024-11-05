@@ -61,4 +61,17 @@ public class SupplierController {
     public ResponseEntity<List<PurchaseResponse>> getAllPurchases(@PathVariable Integer supplierId) throws SupplierNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(supplierService.getAllPurchases(supplierId));
     }
+
+    @PutMapping("/{supplierId}/purchases/{id}")
+    public ResponseEntity<PurchaseResponse> updatePurchase( @PathVariable Integer supplierId,
+                                                            @PathVariable Integer id,
+                                                            @RequestBody PurchaseRequest request) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException, PaymentConditionNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.updatePurchase(supplierId, id, request));
+    }
+
+    @DeleteMapping("/{supplierId}/purchases/{id}")
+    public ResponseEntity<Void> deletePurchase(@PathVariable Integer supplierId, @PathVariable Integer id) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException {
+        supplierService.deletePurchase(supplierId, id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
