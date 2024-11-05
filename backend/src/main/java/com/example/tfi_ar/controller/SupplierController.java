@@ -1,9 +1,6 @@
 package com.example.tfi_ar.controller;
 
-import com.example.tfi_ar.dto.PurchaseRequest;
-import com.example.tfi_ar.dto.PurchaseResponse;
-import com.example.tfi_ar.dto.SupplierRequest;
-import com.example.tfi_ar.dto.SupplierResponse;
+import com.example.tfi_ar.dto.*;
 import com.example.tfi_ar.exception.*;
 import com.example.tfi_ar.service.SupplierService;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +69,31 @@ public class SupplierController {
     @DeleteMapping("/{supplierId}/purchases/{id}")
     public ResponseEntity<Void> deletePurchase(@PathVariable Integer supplierId, @PathVariable Integer id) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException {
         supplierService.deletePurchase(supplierId, id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/{supplierId}/purchases/{purchaseId}/ratings")
+    public ResponseEntity<PurchaseRatingResponse> createPurchaseRating(
+        @PathVariable Integer supplierId,
+        @PathVariable Integer purchaseId,
+        @RequestBody PurchaseRatingRequest request) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException, InvalidRatingException, PurchaseAlreadyHasARatingException {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(supplierService.createPurchaseRating(supplierId, purchaseId, request));
+    }
+
+    @PutMapping("/{supplierId}/purchases/{purchaseId}/ratings")
+    public ResponseEntity<PurchaseRatingResponse> updatePurchaseRating(
+            @PathVariable Integer supplierId,
+            @PathVariable Integer purchaseId,
+            @RequestBody PurchaseRatingRequest request) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException, InvalidRatingException, PurchaseAlreadyHasARatingException, PurchaseDoesNotHaveARatingException {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(supplierService.updatePurchaseRating(supplierId, purchaseId, request));
+    }
+    @DeleteMapping("/{supplierId}/purchases/{purchaseId}/ratings")
+    public ResponseEntity<Void> deletePurchaseRating(
+            @PathVariable Integer supplierId,
+            @PathVariable Integer purchaseId) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException, PurchaseDoesNotHaveARatingException {
+        supplierService.deletePurchaseRating(supplierId, purchaseId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

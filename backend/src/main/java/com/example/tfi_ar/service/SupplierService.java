@@ -1,14 +1,9 @@
 package com.example.tfi_ar.service;
 
-import com.example.tfi_ar.dto.PurchaseRequest;
-import com.example.tfi_ar.dto.PurchaseResponse;
-import com.example.tfi_ar.dto.SupplierRequest;
-import com.example.tfi_ar.dto.SupplierResponse;
+import com.example.tfi_ar.dto.*;
 import com.example.tfi_ar.exception.*;
-import com.example.tfi_ar.model.PaymentCondition;
-import com.example.tfi_ar.model.Purchase;
-import com.example.tfi_ar.model.Supplier;
-import com.example.tfi_ar.model.User;
+import com.example.tfi_ar.model.*;
+import com.example.tfi_ar.repository.PurchaseRatingRepository;
 import com.example.tfi_ar.repository.PurchaseRepository;
 import com.example.tfi_ar.repository.SupplierRepository;
 import com.example.tfi_ar.repository.UserRepository;
@@ -24,6 +19,7 @@ import java.util.Objects;
 public class SupplierService {
     private final SupplierRepository supplierRepository;
     private final PurchaseRepository purchaseRepository;
+    private final PurchaseRatingRepository purchaseRatingRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final AddressService addressService;
@@ -260,5 +256,89 @@ public class SupplierService {
         Purchase savedPurchase = purchaseRepository.save(purchase);
 
         return new PurchaseResponse(savedPurchase);
+    }
+
+    public PurchaseRatingResponse createPurchaseRating(Integer supplierId, Integer purchaseId, PurchaseRatingRequest request) throws PurchaseNotFoundException, SupplierNotFoundException, UserNotFoundException, InvalidRatingException, PurchaseAlreadyHasARatingException {
+        User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        Purchase purchase = supplier.getPurchases()
+                .stream()
+                .filter(p -> p.getId().equals(purchaseId))
+                .findFirst()
+                .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
+
+        if(purchase.getPurchaseRating() != null) {
+            throw new PurchaseAlreadyHasARatingException("Purchase already has a rating");
+        }
+
+        if(request.getRating() < 1 || request.getRating() > 5) {
+            throw new InvalidRatingException("Rating must be between 1 and 5");
+        }
+
+        PurchaseRating rating = PurchaseRating.builder()
+                .rating(request.getRating())
+                .observation(request.getObservation())
+                .purchase(purchase)
+                .createdBy(creatorUser)
+                .build();
+
+        PurchaseRating savedRating = purchaseRatingRepository.save(rating);
+
+        return new PurchaseRatingResponse(savedRating);
+    }
+
+    public PurchaseRatingResponse updatePurchaseRating(Integer supplierId, Integer purchaseId, PurchaseRatingRequest request) throws PurchaseDoesNotHaveARatingException, InvalidRatingException, UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException {
+        User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        Purchase purchase = supplier.getPurchases()
+                .stream()
+                .filter(p -> p.getId().equals(purchaseId))
+                .findFirst()
+                .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
+
+        if(purchase.getPurchaseRating() == null) {
+            throw new PurchaseDoesNotHaveARatingException("Purchase does not have a rating");
+        }
+
+        if(request.getRating() < 1 || request.getRating() > 5) {
+            throw new InvalidRatingException("Rating must be between 1 and 5");
+        }
+
+        PurchaseRating rating = purchase.getPurchaseRating();
+        rating.setRating(request.getRating());
+        rating.setObservation(request.getObservation());
+        rating.setUpdatedBy(updaterUser);
+        PurchaseRating savedRating = purchaseRatingRepository.save(rating);
+
+        return new PurchaseRatingResponse(savedRating);
+    }
+
+    public void deletePurchaseRating(Integer supplierId, Integer purchaseId
+    ) throws UserNotFoundException, SupplierNotFoundException, PurchaseNotFoundException, PurchaseDoesNotHaveARatingException {
+        User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        Purchase purchase = supplier.getPurchases()
+                .stream()
+                .filter(p -> p.getId().equals(purchaseId))
+                .findFirst()
+                .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
+
+        PurchaseRating rating = purchase.getPurchaseRating();
+
+        if(rating == null) throw new PurchaseDoesNotHaveARatingException("Purchase does not have a rating");
+
+        // TO DO implement
     }
 }
