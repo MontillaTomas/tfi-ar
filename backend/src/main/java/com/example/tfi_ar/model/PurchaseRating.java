@@ -20,7 +20,7 @@ public class PurchaseRating {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Check(constraints = "rating >= 0 AND rating <= 5")
+    @Check(constraints = "rating >= 1 AND rating <= 5")
     private Integer rating;
 
     private String observation;
