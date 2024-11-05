@@ -1,11 +1,15 @@
 package com.example.tfi_ar.service;
 
+import com.example.tfi_ar.dto.PurchaseRequest;
+import com.example.tfi_ar.dto.PurchaseResponse;
 import com.example.tfi_ar.dto.SupplierRequest;
 import com.example.tfi_ar.dto.SupplierResponse;
 import com.example.tfi_ar.exception.*;
 import com.example.tfi_ar.model.PaymentCondition;
+import com.example.tfi_ar.model.Purchase;
 import com.example.tfi_ar.model.Supplier;
 import com.example.tfi_ar.model.User;
+import com.example.tfi_ar.repository.PurchaseRepository;
 import com.example.tfi_ar.repository.SupplierRepository;
 import com.example.tfi_ar.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class SupplierService {
     private final SupplierRepository supplierRepository;
+    private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final AddressService addressService;
@@ -155,5 +160,53 @@ public class SupplierService {
         Supplier savedSupplier = supplierRepository.save(supplier);
 
         return new SupplierResponse(savedSupplier);
+    }
+
+    public PurchaseResponse createPurchase(Integer supplierId, PurchaseRequest request) throws UserNotFoundException, SupplierNotFoundException, PaymentConditionNotFoundException {
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        PaymentCondition paymentCondition = supplier.getPaymentConditions().stream()
+                .filter(pc -> pc.getId().equals(request.getPaymentConditionId()))
+                .findFirst()
+                .orElseThrow(() -> new PaymentConditionNotFoundException("Payment condition not found"));
+
+        User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Purchase purchase = Purchase.builder()
+                            .purchaseDate(request.getPurchaseDate())
+                            .total(request.getTotal())
+                            .observation(request.getObservation())
+                            .supplier(supplier)
+                            .paymentCondition(paymentCondition)
+                            .createdBy(creatorUser)
+                            .build();
+
+        Purchase savedPurchase = purchaseRepository.save(purchase);
+
+        return new PurchaseResponse(savedPurchase);
+    }
+
+    public PurchaseResponse getPurchase(Integer supplierId, Integer id) throws PurchaseNotFoundException, SupplierNotFoundException {
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        Purchase purchase = supplier.getPurchases()
+                .stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
+
+        return new PurchaseResponse(purchase);
+    }
+
+    public List<PurchaseResponse> getAllPurchases(Integer supplierId) throws SupplierNotFoundException {
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new SupplierNotFoundException("Supplier not found"));
+
+        return supplier.getPurchases().stream()
+                .map(PurchaseResponse::new)
+                .toList();
     }
 }
