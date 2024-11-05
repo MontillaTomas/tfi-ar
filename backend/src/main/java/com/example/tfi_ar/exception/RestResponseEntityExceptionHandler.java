@@ -85,4 +85,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
+
+    @ExceptionHandler(PaymentConditionNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorMessage> paymentConditionNotFoundException(PaymentConditionNotFoundException exception) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+    }
 }
