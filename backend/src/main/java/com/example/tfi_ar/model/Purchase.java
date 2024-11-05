@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale")
+@Table(name = "purchase")
 @Where(clause = "deleted = false")
 public class Purchase {
     @Id

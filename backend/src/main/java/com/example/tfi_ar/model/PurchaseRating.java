@@ -13,7 +13,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale")
+@Table(name = "purchase_rating")
 @Where(clause = "deleted = false")
 public class PurchaseRating {
     @Id
