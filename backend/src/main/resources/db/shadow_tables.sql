@@ -246,7 +246,27 @@ AFTER UPDATE ON employee
 FOR EACH ROW
 EXECUTE FUNCTION log_employee_update();
 
--- SUPPLIER
+-- Client
+
+CREATE TABLE IF NOT EXISTS client_log (
+    id SERIAL PRIMARY KEY,
+    client_id INTEGER NOT NULL,
+    contact_name VARCHAR(255),
+    email VARCHAR(255),
+    estimated_transactions_number INTEGER,
+    industry VARCHAR(255),
+    name VARCHAR(255),
+    phone VARCHAR(255),
+    remarks VARCHAR(255),
+    technologies_used VARCHAR(255),
+    address_id INTEGER NOT NULL,
+    deleted BOOLEAN NOT NULL,
+    action CHAR(1) NOT NULL,
+    action_by INTEGER NOT NULL,
+    action_date TIMESTAMP
+);
+
+-- Supplier
 
 CREATE TABLE IF NOT EXISTS supplier_log (
     id SERIAL PRIMARY KEY,
@@ -345,3 +365,99 @@ CREATE TRIGGER after_payment_condition_update
 AFTER UPDATE ON payment_condition
 FOR EACH ROW
 EXECUTE FUNCTION log_payment_condition_update();
+
+-- Purchase
+
+CREATE TABLE IF NOT EXISTS purchase_log (
+    id SERIAL PRIMARY KEY,
+    purchase_id INTEGER NOT NULL,
+    total FLOAT(53) NOT NULL,
+    purchase_date TIMESTAMP(6),
+    observation VARCHAR(255),
+    supplier_id INTEGER NOT NULL,
+    payment_condition_id INTEGER NOT NULL,
+    deleted BOOLEAN NOT NULL,
+    action CHAR(1) NOT NULL,
+    action_by INTEGER NOT NULL,
+    action_date TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_purchase_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO purchase_log (purchase_id, total, purchase_date, observation, supplier_id, payment_condition_id, action_by, deleted, action, action_date)
+    VALUES (NEW.id, NEW.total, NEW.purchase_date, NEW.observation, NEW.supplier_id, NEW.payment_condition_id, NEW.created_by, NEW.deleted, 'I', NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION log_purchase_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.deleted THEN
+        INSERT INTO purchase_log (purchase_id, total, purchase_date, observation, supplier_id, payment_condition_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.total, NEW.purchase_date, NEW.observation, NEW.supplier_id, NEW.payment_condition_id, NEW.updated_by, NEW.deleted, 'D', NOW());
+    ELSE
+        INSERT INTO purchase_log (purchase_id, total, purchase_date, observation, supplier_id, payment_condition_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.total, NEW.purchase_date, NEW.observation, NEW.supplier_id, NEW.payment_condition_id, NEW.updated_by, NEW.deleted, 'U', NOW());
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_purchase_insert
+AFTER INSERT ON purchase
+FOR EACH ROW
+EXECUTE FUNCTION log_purchase_insert();
+
+CREATE TRIGGER after_purchase_update
+AFTER UPDATE ON purchase
+FOR EACH ROW
+EXECUTE FUNCTION log_purchase_update();
+
+-- Purchase Rating
+
+CREATE TABLE IF NOT EXISTS purchase_rating_log (
+    id SERIAL PRIMARY KEY,
+    purchase_rating_id INTEGER NOT NULL,
+    rating INTEGER NOT NULL,
+    observation VARCHAR(255),
+    purchase_id INTEGER NOT NULL,
+    deleted BOOLEAN NOT NULL,
+    action CHAR(1) NOT NULL,
+    action_by INTEGER NOT NULL,
+    action_date TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_purchase_rating_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO purchase_rating_log (purchase_rating_id, rating, observation, purchase_id, action_by, deleted, action, action_date)
+    VALUES (NEW.id, NEW.rating, NEW.observation, NEW.purchase_id, NEW.created_by, NEW.deleted, 'I', NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION log_purchase_rating_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.deleted THEN
+        INSERT INTO purchase_rating_log (purchase_rating_id, rating, observation, purchase_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.rating, NEW.observation, NEW.purchase_id, NEW.updated_by, NEW.deleted, 'D', NOW());
+    ELSE
+        INSERT INTO purchase_rating_log (purchase_rating_id, rating, observation, purchase_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.rating, NEW.observation, NEW.purchase_id, NEW.updated_by, NEW.deleted, 'U', NOW());
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_purchase_rating_insert
+AFTER INSERT ON purchase_rating
+FOR EACH ROW
+EXECUTE FUNCTION log_purchase_rating_insert();
+
+CREATE TRIGGER after_purchase_rating_update
+AFTER UPDATE ON purchase_rating
+FOR EACH ROW
+EXECUTE FUNCTION log_purchase_rating_update();
