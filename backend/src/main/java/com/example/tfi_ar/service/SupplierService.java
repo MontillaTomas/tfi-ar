@@ -339,6 +339,8 @@ public class SupplierService {
 
         if(rating == null) throw new PurchaseDoesNotHaveARatingException("Purchase does not have a rating");
 
-        // TO DO implement
+        rating.setDeleted(true);
+        rating.setUpdatedBy(updaterUser);
+        purchaseRatingRepository.save(rating);
     }
 }

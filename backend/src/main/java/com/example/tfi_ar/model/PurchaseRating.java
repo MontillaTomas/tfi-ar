@@ -25,7 +25,7 @@ public class PurchaseRating {
 
     private String observation;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_id", nullable = false)
     private Purchase purchase;
 

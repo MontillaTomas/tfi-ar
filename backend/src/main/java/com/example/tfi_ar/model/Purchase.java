@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -27,10 +28,10 @@ public class Purchase {
     private Double total;
     private String observation;
 
-    @OneToOne(  mappedBy = "purchase",
-                cascade = CascadeType.ALL,
-                fetch = FetchType.LAZY)
-    private PurchaseRating purchaseRating;
+    @OneToMany(fetch = FetchType.LAZY,
+               mappedBy = "purchase",
+               cascade = CascadeType.ALL)
+    private List<PurchaseRating> ratings;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
@@ -49,4 +50,9 @@ public class Purchase {
     private User updatedBy;
 
     private boolean deleted;
+
+    public PurchaseRating getPurchaseRating() {
+        if (ratings == null) return null;
+        return ratings.stream().filter(rating -> !rating.isDeleted()).findFirst().orElse(null);
+    }
 }
