@@ -45,7 +45,7 @@ public class EmployeeService {
         User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Address address = addressService.create(request.getAddressRequest());
+        Address address = addressService.create(request.getAddress());
 
         Employee employee = employeeUser == null
                 ? new Employee(request, address, creatorUser)
@@ -89,12 +89,21 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
-        if (request.getDni() != null && employeeRepository.findByDni(request.getDni()).isPresent() && !employee.getDni().equals(request.getDni())) {
+        if (request.getDni() != null &&
+            employeeRepository.findByDni(request.getDni()).isPresent() &&
+            !employee.getDni().equals(request.getDni())) {
             throw new DniAlreadyInUseException("Dni already in use");
         }
 
-        if(request.getEmail() != null && employeeRepository.findByEmail(request.getEmail()).isPresent() && !employee.getEmail().equals(request.getEmail())) {
+        if( request.getEmail() != null &&
+            employeeRepository.findByEmail(request.getEmail()).isPresent() &&
+            !employee.getEmail().equals(request.getEmail())) {
             throw new EmailAlreadyInUseException("Email already in use");
+        }
+
+        if( request.getUserId() != null &&
+            employeeRepository.findByUserId(request.getUserId()).isPresent()) {
+            throw new UserAlreadyInUseException("User already in use");
         }
 
         User updateUser = userRepository.findById(authenticationService.getUserIdFromToken())
@@ -106,7 +115,7 @@ public class EmployeeService {
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
         }
 
-        addressService.update(employee.getAddress().getId(), request.getAddressRequest());
+        addressService.update(employee.getAddress().getId(), request.getAddress());
 
         employee.setDni(request.getDni());
         employee.setName(request.getName());
