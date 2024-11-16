@@ -2,9 +2,7 @@ package com.example.tfi_ar.controller;
 
 import com.example.tfi_ar.dto.ClientRequest;
 import com.example.tfi_ar.dto.ClientResponse;
-import com.example.tfi_ar.exception.CityNotFoundException;
-import com.example.tfi_ar.exception.ClientNotFoundException;
-import com.example.tfi_ar.exception.UserNotFoundException;
+import com.example.tfi_ar.exception.*;
 import com.example.tfi_ar.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,7 @@ public class ClientController {
     private final ClientService clientService;
 
     @PostMapping
-    public ResponseEntity<ClientResponse> create(@RequestBody ClientRequest request) throws UserNotFoundException, CityNotFoundException {
+    public ResponseEntity<ClientResponse> create(@RequestBody ClientRequest request) throws UserNotFoundException, CityNotFoundException, EmailAlreadyInUseException, NameAlreadyInUseException {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.create(request));
     }
 
@@ -38,7 +36,7 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponse> update(@PathVariable Integer id, @RequestBody ClientRequest request) throws ClientNotFoundException, UserNotFoundException, CityNotFoundException {
+    public ResponseEntity<ClientResponse> update(@PathVariable Integer id, @RequestBody ClientRequest request) throws ClientNotFoundException, UserNotFoundException, CityNotFoundException, NameAlreadyInUseException, EmailAlreadyInUseException {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.update(id, request));
     }
 

@@ -266,6 +266,40 @@ CREATE TABLE IF NOT EXISTS client_log (
     action_date TIMESTAMP
 );
 
+CREATE OR REPLACE FUNCTION log_client_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO client_log (client_id, contact_name, email, estimated_transactions_number, industry, name, phone, remarks, technologies_used, address_id, action_by, deleted, action, action_date)
+    VALUES (NEW.id, NEW.contact_name, NEW.email, NEW.estimated_transactions_number, NEW.industry, NEW.name, NEW.phone, NEW.remarks, NEW.technologies_used, NEW.address_id, NEW.created_by, NEW.deleted, 'I', NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION log_client_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.deleted THEN
+        INSERT INTO client_log (client_id, contact_name, email, estimated_transactions_number, industry, name, phone, remarks, technologies_used, address_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.contact_name, NEW.email, NEW.estimated_transactions_number, NEW.industry, NEW.name, NEW.phone, NEW.remarks, NEW.technologies_used, NEW.address_id, NEW.updated_by, NEW.deleted, 'D', NOW());
+    ELSE
+        INSERT INTO client_log (client_id, contact_name, email, estimated_transactions_number, industry, name, phone, remarks, technologies_used, address_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.contact_name, NEW.email, NEW.estimated_transactions_number, NEW.industry, NEW.name, NEW.phone, NEW.remarks, NEW.technologies_used, NEW.address_id, NEW.updated_by, NEW.deleted, 'U', NOW());
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_client_insert
+AFTER INSERT ON client
+FOR EACH ROW
+EXECUTE FUNCTION log_client_insert();
+
+CREATE TRIGGER after_client_update
+AFTER UPDATE ON client
+FOR EACH ROW
+EXECUTE FUNCTION log_client_update();
+
+
 -- Supplier
 
 CREATE TABLE IF NOT EXISTS supplier_log (

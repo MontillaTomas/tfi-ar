@@ -1,5 +1,6 @@
 package com.example.tfi_ar.dto;
 
+import com.example.tfi_ar.model.InvoiceState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +18,6 @@ public class InvoiceRequest {
     private LocalDate dueDate;
     private String paymentMethod;
     private String observation;
+    private InvoiceState state;
     private List<InvoiceDetailRequest> details;
 }

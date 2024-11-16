@@ -22,7 +22,7 @@ public class Purchase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @JoinColumn(name = "purchase_date")
+    @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
     private Double total;

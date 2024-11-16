@@ -17,7 +17,7 @@ public class EmployeeCreateRequest {
     private LocalDate birthDate;
     private String email;
     private String phone;
-    private AddressRequest addressRequest;
+    private AddressRequest address;
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer userId;

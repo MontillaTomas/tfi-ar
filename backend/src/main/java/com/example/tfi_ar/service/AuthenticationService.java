@@ -5,6 +5,8 @@ import com.example.tfi_ar.dto.AuthenticationRequest;
 import com.example.tfi_ar.dto.AuthenticationResponse;
 import com.example.tfi_ar.dto.RegisterRequest;
 import com.example.tfi_ar.exception.EmailAlreadyInUseException;
+import com.example.tfi_ar.exception.InvalidRoleException;
+import com.example.tfi_ar.model.Role;
 import com.example.tfi_ar.model.User;
 import com.example.tfi_ar.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +32,13 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) throws EmailAlreadyInUseException {
+    public AuthenticationResponse register(RegisterRequest request) throws EmailAlreadyInUseException, InvalidRoleException {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException("Email already in use");
+        }
+
+        if (!Arrays.asList(Role.values()).contains(request.getRole())) {
+            throw new InvalidRoleException("Invalid role");
         }
 
         var user = User.builder()
