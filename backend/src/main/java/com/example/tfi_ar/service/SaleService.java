@@ -44,6 +44,7 @@ public class SaleService {
                             .state(InvoiceState.PENDING)
                             .paymentMethod(request.getInvoice().getPaymentMethod())
                             .observation(request.getInvoice().getObservation())
+                            .state(request.getInvoice().getState())
                             .details(details)
                             .createdBy(creatorUser)
                             .build();
@@ -136,6 +137,7 @@ public class SaleService {
         sale.getInvoice().setDueDate(request.getInvoice().getDueDate());
         sale.getInvoice().setPaymentMethod(request.getInvoice().getPaymentMethod());
         sale.getInvoice().setObservation(request.getInvoice().getObservation());
+        sale.getInvoice().setState(request.getInvoice().getState());
         sale.getInvoice().setDetails(details);
         sale.getInvoice().setUpdatedBy(updaterUser);
 
