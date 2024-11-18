@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "client")
 @Where(clause = "deleted = false")
-
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -46,7 +45,8 @@ public class Client {
     @Column(name = "remarks")
     private String remarks;
 
-
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    private List<ClientInteraction> interactions;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)

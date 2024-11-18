@@ -1,5 +1,7 @@
 package com.example.tfi_ar.controller;
 
+import com.example.tfi_ar.dto.ClientInteractionRequest;
+import com.example.tfi_ar.dto.ClientInteractionResponse;
 import com.example.tfi_ar.dto.ClientRequest;
 import com.example.tfi_ar.dto.ClientResponse;
 import com.example.tfi_ar.exception.*;
@@ -43,6 +45,17 @@ public class ClientController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) throws ClientNotFoundException, UserNotFoundException {
         clientService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/{id}/interactions")
+    public ResponseEntity<ClientInteractionResponse> addInteraction(@PathVariable Integer id, @RequestBody ClientInteractionRequest request) throws ClientNotFoundException, UserNotFoundException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.addInteraction(id, request));
+    }
+
+    @DeleteMapping("/{id}/interactions/{interactionId}")
+    public ResponseEntity<Void> deleteInteraction(@PathVariable Integer id, @PathVariable Integer interactionId) throws ClientNotFoundException, ClientInteractionNotFoundException, UserNotFoundException {
+        clientService.deleteInteraction(id, interactionId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
