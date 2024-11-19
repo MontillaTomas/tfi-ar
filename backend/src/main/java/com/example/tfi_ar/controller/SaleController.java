@@ -2,6 +2,7 @@ package com.example.tfi_ar.controller;
 
 import com.example.tfi_ar.dto.SaleRequest;
 import com.example.tfi_ar.dto.SaleResponse;
+import com.example.tfi_ar.exception.ClientNotFoundException;
 import com.example.tfi_ar.exception.SaleNotFoundException;
 import com.example.tfi_ar.exception.UserNotFoundException;
 import com.example.tfi_ar.service.SaleService;
@@ -14,35 +15,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/sales")
+@RequestMapping("/api/v1/clients/{clientId}/sales")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN') or hasRole('SALES_MODULE_USER')")
 public class SaleController {
     private final SaleService saleService;
 
     @PostMapping
-    public ResponseEntity<SaleResponse> create(@RequestBody SaleRequest request) throws UserNotFoundException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.create(request));
+    public ResponseEntity<SaleResponse> create(@RequestBody SaleRequest request, @PathVariable Integer clientId) throws UserNotFoundException, ClientNotFoundException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.create(request, clientId));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SaleResponse> get(@PathVariable Integer id) throws SaleNotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.get(id));
+    @GetMapping("/{saleId}")
+    public ResponseEntity<SaleResponse> get(@PathVariable Integer saleId, @PathVariable Integer clientId) throws SaleNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.get(saleId, clientId));
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleResponse>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.getAll());
+    public ResponseEntity<List<SaleResponse>> getAll(@PathVariable Integer clientId) {
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.getAll(clientId));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SaleResponse> update(@PathVariable Integer id, @RequestBody SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.update(id, request));
+    @PutMapping("/{saleId}")
+    public ResponseEntity<SaleResponse> update(@PathVariable Integer saleId, @PathVariable Integer clientId, @RequestBody SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.update(saleId, clientId, request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) throws SaleNotFoundException, UserNotFoundException {
-        saleService.delete(id);
+    @DeleteMapping("/{saleId}")
+    public ResponseEntity<Void> delete(@PathVariable Integer saleId, @PathVariable Integer clientId) throws SaleNotFoundException, UserNotFoundException {
+        saleService.delete(saleId, clientId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

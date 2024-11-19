@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -37,8 +38,13 @@ public class ClientResponse {
         this.estimatedTransactionsNumber = client.getEstimatedTransactionsNumber();
         this.technologiesUsed = client.getTechnologiesUsed();
         this.remarks = client.getRemarks();
-        this.interactions = client.getInteractions().stream()
-                            .map(ClientInteractionResponse::new)
-                            .collect(java.util.stream.Collectors.toList());
+
+        if(client.getInteractions() != null && !client.getInteractions().isEmpty()) {
+            this.interactions = client.getInteractions().stream()
+                    .map(ClientInteractionResponse::new)
+                    .collect(java.util.stream.Collectors.toList());
+        } else {
+            this.interactions = new ArrayList<>();
+        }
     }
 }

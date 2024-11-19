@@ -48,6 +48,9 @@ public class Client {
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<ClientInteraction> interactions;
 
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    private List<Sale> sales;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
