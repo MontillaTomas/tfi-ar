@@ -299,6 +299,52 @@ AFTER UPDATE ON client
 FOR EACH ROW
 EXECUTE FUNCTION log_client_update();
 
+-- Client Interaction
+
+CREATE TABLE IF NOT EXISTS client_interaction_log (
+    id SERIAL PRIMARY KEY,
+    client_interaction_id INTEGER NOT NULL,
+    date TIMESTAMP(6) NOT NULL,
+    details VARCHAR(255),
+    client_id INTEGER NOT NULL,
+    deleted BOOLEAN NOT NULL,
+    action CHAR(1) NOT NULL,
+    action_by INTEGER NOT NULL,
+    action_date TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_client_interaction_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO client_interaction_log (client_interaction_id, date, details, client_id, action_by, deleted, action, action_date)
+    VALUES (NEW.id, NEW.date, NEW.details, NEW.client_id, NEW.created_by, NEW.deleted, 'I', NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION log_client_interaction_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.deleted THEN
+        INSERT INTO client_interaction_log (client_interaction_id, date, details, client_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.date, NEW.details, NEW.client_id, NEW.updated_by, NEW.deleted, 'D', NOW());
+    ELSE
+        INSERT INTO client_interaction_log (client_interaction_id, date, details, client_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.date, NEW.details, NEW.client_id, NEW.updated_by, NEW.deleted, 'U', NOW());
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_client_interaction_insert
+AFTER INSERT ON client_interaction
+FOR EACH ROW
+EXECUTE FUNCTION log_client_interaction_insert();
+
+CREATE TRIGGER after_client_interaction_update
+AFTER UPDATE ON client_interaction
+FOR EACH ROW
+EXECUTE FUNCTION log_client_interaction_update();
 
 -- Supplier
 
