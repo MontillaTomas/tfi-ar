@@ -100,8 +100,14 @@ public class SaleService {
         });
     }
 
-    public void delete(Integer id) throws SaleNotFoundException, UserNotFoundException {
-        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+    public void delete(Integer saleId, Integer clientId) throws SaleNotFoundException, UserNotFoundException {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        Sale sale = client.getSales().stream()
+                .filter(s -> s.getId().equals(saleId))
+                .findFirst()
+                .orElseThrow(() -> new SaleNotFoundException("Sale not found"));
 
         User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -123,8 +129,14 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
-    public SaleResponse update(Integer id, SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
-        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+    public SaleResponse update(Integer saleId, Integer clientId, SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        Sale sale = client.getSales().stream()
+                .filter(s -> s.getId().equals(saleId))
+                .findFirst()
+                .orElseThrow(() -> new SaleNotFoundException("Sale not found"));
 
         User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));

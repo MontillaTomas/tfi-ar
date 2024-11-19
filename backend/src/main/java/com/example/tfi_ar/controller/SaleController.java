@@ -36,14 +36,14 @@ public class SaleController {
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getAll(clientId));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SaleResponse> update(@PathVariable Integer id, @RequestBody SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.update(id, request));
+    @PutMapping("/{saleId}")
+    public ResponseEntity<SaleResponse> update(@PathVariable Integer saleId, @PathVariable Integer clientId, @RequestBody SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.update(saleId, clientId, request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) throws SaleNotFoundException, UserNotFoundException {
-        saleService.delete(id);
+    @DeleteMapping("/{saleId}")
+    public ResponseEntity<Void> delete(@PathVariable Integer saleId, @PathVariable Integer clientId) throws SaleNotFoundException, UserNotFoundException {
+        saleService.delete(saleId, clientId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
