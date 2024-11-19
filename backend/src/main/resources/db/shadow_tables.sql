@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS sale_log (
     sale_id INTEGER NOT NULL,
     observation VARCHAR(255),
     sale_date TIMESTAMP(6) NOT NULL,
+    client_id INTEGER NOT NULL,
     deleted BOOLEAN NOT NULL,
     action CHAR(1) NOT NULL,
     action_by INTEGER NOT NULL,
@@ -14,8 +15,8 @@ CREATE TABLE IF NOT EXISTS sale_log (
 CREATE OR REPLACE FUNCTION log_sale_insert()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO sale_log (sale_id, observation, sale_date, action_by, deleted, action, action_date)
-    VALUES (NEW.id, NEW.observation, NEW.sale_date, NEW.created_by, NEW.deleted, 'I', NOW());
+    INSERT INTO sale_log (sale_id, observation, sale_date, client_id, action_by, deleted, action, action_date)
+    VALUES (NEW.id, NEW.observation, NEW.sale_date, NEW.client_id, NEW.created_by, NEW.deleted, 'I', NOW());
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -24,11 +25,11 @@ CREATE OR REPLACE FUNCTION log_sale_update()
 RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.deleted THEN
-        INSERT INTO sale_log (sale_id, observation, sale_date, action_by, deleted, action, action_date)
-        VALUES (NEW.id, NEW.observation, NEW.sale_date, NEW.updated_by, NEW.deleted, 'D', NOW());
+        INSERT INTO sale_log (sale_id, observation, sale_date, client_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.observation, NEW.sale_date, NEW.client_id, NEW.updated_by, NEW.deleted, 'D', NOW());
     ELSE
-        INSERT INTO sale_log (sale_id, observation, sale_date, action_by, deleted, action, action_date)
-        VALUES (NEW.id, NEW.observation, NEW.sale_date, NEW.updated_by, NEW.deleted, 'U', NOW());
+        INSERT INTO sale_log (sale_id, observation, sale_date, client_id, action_by, deleted, action, action_date)
+        VALUES (NEW.id, NEW.observation, NEW.sale_date, NEW.client_id, NEW.updated_by, NEW.deleted, 'U', NOW());
     END IF;
     RETURN NEW;
 END;
