@@ -30,6 +30,10 @@ public class Sale {
     private Invoice invoice;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
 
@@ -38,11 +42,4 @@ public class Sale {
     private User updatedBy;
 
     private boolean deleted;
-
-    /*
-    TO DO: Implement the following attribute when the Client class is implemented
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
-     */
 }
