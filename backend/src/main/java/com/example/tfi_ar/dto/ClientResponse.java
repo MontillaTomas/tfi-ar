@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,6 +23,7 @@ public class ClientResponse {
     private Integer estimatedTransactionsNumber;
     private String technologiesUsed;
     private String remarks;
+    private List<ClientInteractionResponse> interactions;
 
 
     public ClientResponse(Client client) {
@@ -34,5 +37,8 @@ public class ClientResponse {
         this.estimatedTransactionsNumber = client.getEstimatedTransactionsNumber();
         this.technologiesUsed = client.getTechnologiesUsed();
         this.remarks = client.getRemarks();
+        this.interactions = client.getInteractions().stream()
+                            .map(ClientInteractionResponse::new)
+                            .collect(java.util.stream.Collectors.toList());
     }
 }
