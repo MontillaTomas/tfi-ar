@@ -3,17 +3,16 @@ package com.example.tfi_ar.controller;
 import com.example.tfi_ar.dto.AuthenticationRequest;
 import com.example.tfi_ar.dto.AuthenticationResponse;
 import com.example.tfi_ar.dto.RegisterRequest;
+import com.example.tfi_ar.dto.RoleResponse;
 import com.example.tfi_ar.exception.EmailAlreadyInUseException;
 import com.example.tfi_ar.exception.InvalidRoleException;
+import com.example.tfi_ar.exception.UserNotFoundException;
 import com.example.tfi_ar.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -33,7 +32,7 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
-    ) {
+    ) throws UserNotFoundException {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
@@ -41,7 +40,12 @@ public class AuthenticationController {
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
-    ) throws IOException {
+    ) throws IOException, UserNotFoundException {
         authenticationService.refreshToken(request, response);
+    }
+
+    @GetMapping("/role")
+    public ResponseEntity<RoleResponse> getCurrentRole() {
+        return ResponseEntity.ok(authenticationService.getCurrentRole());
     }
 }
