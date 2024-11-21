@@ -1,3 +1,30 @@
+-- User
+
+CREATE TABLE IF NOT EXISTS user_log (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    email VARCHAR(255),
+    password VARCHAR(255),
+    role VARCHAR(255),
+    deleted BOOLEAN NOT NULL,
+    action CHAR(1) NOT NULL,
+    action_date TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_user_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO user_log (user_id, email, password, role, deleted, action, action_date)
+    VALUES (NEW.id, NEW.email, NEW.password, NEW.role, NEW.deleted, 'I', NOW());
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_user_insert
+AFTER INSERT ON user_
+FOR EACH ROW
+EXECUTE FUNCTION log_user_insert();
+
 -- Sale
 
 CREATE TABLE IF NOT EXISTS sale_log (
