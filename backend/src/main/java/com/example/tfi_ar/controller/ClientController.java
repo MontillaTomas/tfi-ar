@@ -28,11 +28,13 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENT_MODULE_USER') or hasRole('SALES_MODULE_USER')")
     public ResponseEntity<ClientResponse> get(@PathVariable Integer id) throws ClientNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.get(id));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENT_MODULE_USER') or hasRole('SALES_MODULE_USER')")
     public ResponseEntity<List<ClientResponse>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getAll());
     }
