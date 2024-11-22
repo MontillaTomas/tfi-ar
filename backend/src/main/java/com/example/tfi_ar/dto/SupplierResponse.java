@@ -23,6 +23,7 @@ public class SupplierResponse {
     private String phone;
     private AddressResponse address;
     private List<PaymentConditionResponse> paymentConditions;
+    private double averageRating;
 
     public SupplierResponse(Supplier supplier) {
         this.id = supplier.getId();
@@ -36,5 +37,16 @@ public class SupplierResponse {
                 .stream()
                 .map(PaymentConditionResponse::new)
                 .collect(Collectors.toList());
+        if (supplier.getPurchases() == null) {
+            this.averageRating = 0;
+            return;
+        }
+
+        this.averageRating = supplier.getPurchases().stream()
+                .map(purchase -> purchase.getPurchaseRating())
+                .filter(rating -> rating != null)
+                .mapToInt(rating -> rating.getRating())
+                .average()
+                .orElse(0);
     }
 }
