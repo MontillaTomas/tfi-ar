@@ -7,31 +7,35 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale")
+@Table(name = "payment_condition")
 @Where(clause = "deleted = false")
-public class Sale {
+public class PaymentCondition {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "sale_date")
-    private LocalDateTime saleDate;
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
+    @Column(name = "payment_term_days")
+    private Integer paymentTermDays;
+
+    private String currency;
+    private String bank;
+
+    @Column(name = "account_number")
+    private String accountNumber;
 
     private String observation;
 
-    @OneToOne(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Invoice invoice;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)

@@ -28,12 +28,6 @@ public enum Role {
             Permission.SUPPLIER_MODULE_USER_DELETE,
             Permission.SUPPLIER_MODULE_USER_UPDATE
     )),
-    CUSTOMER_MODULE_USER(Set.of(
-            Permission.CUSTOMER_MODULE_USER_READ,
-            Permission.CUSTOMER_MODULE_USER_WRITE,
-            Permission.CUSTOMER_MODULE_USER_DELETE,
-            Permission.CUSTOMER_MODULE_USER_UPDATE
-    )),
     CLIENT_MODULE_USER(Set.of(
             Permission.CLIENT_MODULE_USER_READ,
             Permission.CLIENT_MODULE_USER_WRITE,
@@ -56,11 +50,6 @@ public enum Role {
             Permission.SUPPLIER_MODULE_USER_WRITE,
             Permission.SUPPLIER_MODULE_USER_DELETE,
             Permission.SUPPLIER_MODULE_USER_UPDATE,
-
-            Permission.CUSTOMER_MODULE_USER_READ,
-            Permission.CUSTOMER_MODULE_USER_WRITE,
-            Permission.CUSTOMER_MODULE_USER_DELETE,
-            Permission.CUSTOMER_MODULE_USER_UPDATE,
 
             Permission.CLIENT_MODULE_USER_READ,
             Permission.CLIENT_MODULE_USER_WRITE,

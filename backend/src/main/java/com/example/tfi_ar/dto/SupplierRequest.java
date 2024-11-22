@@ -5,20 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeCreateRequest {
-    private Integer dni;
-    private String name;
-    private LocalDate birthDate;
+public class SupplierRequest {
+    private String cuit;
     private String email;
+    private String name;
     private String phone;
     private AddressRequest address;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Integer userId;
+    private List<PaymentConditionRequest> paymentConditions;
 }

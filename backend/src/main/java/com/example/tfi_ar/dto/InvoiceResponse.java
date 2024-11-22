@@ -1,6 +1,7 @@
 package com.example.tfi_ar.dto;
 
 import com.example.tfi_ar.model.Invoice;
+import com.example.tfi_ar.model.InvoiceState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class InvoiceResponse {
     private LocalDate dueDate;
     private String paymentMethod;
     private String observation;
+    private InvoiceState state;
     private List<InvoiceDetailResponse> details;
 
     public InvoiceResponse(Invoice invoice) {
@@ -28,6 +30,7 @@ public class InvoiceResponse {
         this.dueDate = invoice.getDueDate();
         this.paymentMethod = invoice.getPaymentMethod();
         this.observation = invoice.getObservation();
+        this.state = invoice.getState();
         this.details = invoice.getDetails().stream()
                             .map(InvoiceDetailResponse::new)
                             .collect(Collectors.toList());

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationResponse {
-    private String accessToken;
-    private String refreshToken;
+public class PurchaseRatingRequest {
+    private Integer rating;
+    private String observation;
 }

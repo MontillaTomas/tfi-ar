@@ -8,30 +8,38 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale")
+@Table(name = "purchase")
 @Where(clause = "deleted = false")
-public class Sale {
+public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "sale_date")
-    private LocalDateTime saleDate;
+    @Column(name = "purchase_date")
+    private LocalDateTime purchaseDate;
 
+    private Double total;
     private String observation;
 
-    @OneToOne(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Invoice invoice;
+    @OneToMany(fetch = FetchType.LAZY,
+               mappedBy = "purchase",
+               cascade = CascadeType.ALL)
+    private List<PurchaseRating> ratings;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_condition_id", nullable = false)
+    private PaymentCondition paymentCondition;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
@@ -42,4 +50,9 @@ public class Sale {
     private User updatedBy;
 
     private boolean deleted;
+
+    public PurchaseRating getPurchaseRating() {
+        if (ratings == null) return null;
+        return ratings.stream().filter(rating -> !rating.isDeleted()).findFirst().orElse(null);
+    }
 }

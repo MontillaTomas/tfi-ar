@@ -5,33 +5,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Check;
 import org.hibernate.annotations.Where;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale")
+@Table(name = "purchase_rating")
 @Where(clause = "deleted = false")
-public class Sale {
+public class PurchaseRating {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "sale_date")
-    private LocalDateTime saleDate;
+    @Check(constraints = "rating >= 1 AND rating <= 5")
+    private Integer rating;
 
     private String observation;
 
-    @OneToOne(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Invoice invoice;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "purchase_id", nullable = false)
+    private Purchase purchase;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)

@@ -2,9 +2,11 @@ package com.example.tfi_ar.service;
 
 import com.example.tfi_ar.dto.SaleRequest;
 import com.example.tfi_ar.dto.SaleResponse;
+import com.example.tfi_ar.exception.ClientNotFoundException;
 import com.example.tfi_ar.exception.SaleNotFoundException;
 import com.example.tfi_ar.exception.UserNotFoundException;
 import com.example.tfi_ar.model.*;
+import com.example.tfi_ar.repository.ClientRepository;
 import com.example.tfi_ar.repository.SaleRepository;
 import com.example.tfi_ar.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +18,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SaleService {
+    private final ClientRepository clientRepository;
     private final SaleRepository saleRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
 
-    public SaleResponse create(SaleRequest request) throws UserNotFoundException {
+    public SaleResponse create(SaleRequest request, Integer clientId) throws UserNotFoundException, ClientNotFoundException {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
         User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -44,6 +50,7 @@ public class SaleService {
                             .state(InvoiceState.PENDING)
                             .paymentMethod(request.getInvoice().getPaymentMethod())
                             .observation(request.getInvoice().getObservation())
+                            .state(request.getInvoice().getState())
                             .details(details)
                             .createdBy(creatorUser)
                             .build();
@@ -54,6 +61,7 @@ public class SaleService {
                 .saleDate(request.getSaleDate())
                 .observation(request.getObservation())
                 .invoice(invoice)
+                .client(client)
                 .createdBy(creatorUser)
                 .build();
 
@@ -64,14 +72,24 @@ public class SaleService {
         return new SaleResponse(savedSale);
     }
 
-    public List<SaleResponse> getAll() {
-        return saleRepository.findAll().stream()
+    public List<SaleResponse> getAll(Integer clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        return client.getSales().stream()
                 .map(SaleResponse::new)
                 .toList();
     }
 
-    public SaleResponse get(Integer id) throws SaleNotFoundException {
-        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+    public SaleResponse get(Integer id, Integer clientId) throws SaleNotFoundException {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        Sale sale = client.getSales().stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+
         return new SaleResponse(sale);
     }
 
@@ -82,8 +100,14 @@ public class SaleService {
         });
     }
 
-    public void delete(Integer id) throws SaleNotFoundException, UserNotFoundException {
-        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+    public void delete(Integer saleId, Integer clientId) throws SaleNotFoundException, UserNotFoundException {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        Sale sale = client.getSales().stream()
+                .filter(s -> s.getId().equals(saleId))
+                .findFirst()
+                .orElseThrow(() -> new SaleNotFoundException("Sale not found"));
 
         User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -105,8 +129,14 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
-    public SaleResponse update(Integer id, SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
-        Sale sale = saleRepository.findById(id).orElseThrow(() -> new SaleNotFoundException("Sale not found"));
+    public SaleResponse update(Integer saleId, Integer clientId, SaleRequest request) throws SaleNotFoundException, UserNotFoundException {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        Sale sale = client.getSales().stream()
+                .filter(s -> s.getId().equals(saleId))
+                .findFirst()
+                .orElseThrow(() -> new SaleNotFoundException("Sale not found"));
 
         User updaterUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -136,6 +166,7 @@ public class SaleService {
         sale.getInvoice().setDueDate(request.getInvoice().getDueDate());
         sale.getInvoice().setPaymentMethod(request.getInvoice().getPaymentMethod());
         sale.getInvoice().setObservation(request.getInvoice().getObservation());
+        sale.getInvoice().setState(request.getInvoice().getState());
         sale.getInvoice().setDetails(details);
         sale.getInvoice().setUpdatedBy(updaterUser);
 

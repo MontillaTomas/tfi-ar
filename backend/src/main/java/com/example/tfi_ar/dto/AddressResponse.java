@@ -1,7 +1,6 @@
 package com.example.tfi_ar.dto;
 
 import com.example.tfi_ar.model.Address;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,6 @@ public class AddressResponse {
     private String number;
     private String floor;
     private String apartment;
-    @JsonProperty("postal_code")
     private String postalCode;
     private String city;
     private String state;

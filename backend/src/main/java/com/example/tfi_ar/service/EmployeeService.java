@@ -31,30 +31,25 @@ public class EmployeeService {
             throw new EmailAlreadyInUseException("Email already in use");
         }
 
-        if (employeeRepository.findByUserId(request.getUserId()).isPresent()) {
-            throw new UserAlreadyInUseException("User already in use");
-        }
+        User employeeUser = null;
 
-        User employeeUser = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (request.getUserId() != null) {
+            if (employeeRepository.findByUserId(request.getUserId()).isPresent()) {
+                throw new UserAlreadyInUseException("User already in use");
+            }
+
+             employeeUser = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        }
 
         User creatorUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Address address = addressService.create(request.getAddressRequest());
+        Address address = addressService.create(request.getAddress());
 
-        var employee = Employee.builder()
-                .dni(request.getDni())
-                .name(request.getName())
-                .birthDate(request.getBirthDate())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .user(employeeUser)
-                .address(address)
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .createdBy(creatorUser)
-                .build();
+        Employee employee = employeeUser == null
+                ? new Employee(request, address, creatorUser)
+                : new Employee(request, address, employeeUser, creatorUser);
 
         Employee savedEmployee = employeeRepository.save(employee);
 
@@ -82,6 +77,9 @@ public class EmployeeService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         employee.setUpdatedBy(updateUser);
+        employee.getAddress().setDeleted(true);
+        employee.getAddress().setUpdatedBy(updateUser);
+        employee.setUser(null);
         employee.setDeleted(true);
 
         employeeRepository.save(employee);
@@ -91,34 +89,42 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
-        if (request.getDni() != null && employeeRepository.findByDni(request.getDni()).isPresent() && !employee.getDni().equals(request.getDni())) {
+        if (request.getDni() != null &&
+            employeeRepository.findByDni(request.getDni()).isPresent() &&
+            !employee.getDni().equals(request.getDni())) {
             throw new DniAlreadyInUseException("Dni already in use");
         }
 
-        if(request.getEmail() != null && employeeRepository.findByEmail(request.getEmail()).isPresent() && !employee.getEmail().equals(request.getEmail())) {
+        if( request.getEmail() != null &&
+            employeeRepository.findByEmail(request.getEmail()).isPresent() &&
+            !employee.getEmail().equals(request.getEmail())) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
 
-        User employeeUser = null;
-        if(request.getUserId() != null) {
-             employeeUser = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if( request.getUserId() != null &&
+            employeeRepository.findByUserId(request.getUserId()).isPresent()) {
+            throw new UserAlreadyInUseException("User already in use");
         }
 
         User updateUser = userRepository.findById(authenticationService.getUserIdFromToken())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        addressService.update(employee.getAddress().getId(), request.getAddressRequest());
+        User employeeUser = null;
+        if(request.getUserId() != null) {
+            employeeUser = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        }
 
-        if(request.getDni() != null) employee.setDni(request.getDni());
-        if(request.getName() != null) employee.setName(request.getName());
-        if(request.getBirthDate() != null) employee.setBirthDate(request.getBirthDate());
-        if(request.getEmail() != null) employee.setEmail(request.getEmail());
-        if(request.getPhone() != null) employee.setPhone(request.getPhone());
-        if(request.getStartDate() != null) employee.setStartDate(request.getStartDate());
-        if(request.getEndDate() != null) employee.setEndDate(request.getEndDate());
-        if(request.getUserId() != null) employee.setUser(employeeUser);
+        addressService.update(employee.getAddress().getId(), request.getAddress());
 
+        employee.setDni(request.getDni());
+        employee.setName(request.getName());
+        employee.setBirthDate(request.getBirthDate());
+        employee.setEmail(request.getEmail());
+        employee.setPhone(request.getPhone());
+        employee.setStartDate(request.getStartDate());
+        employee.setEndDate(request.getEndDate());
+        employee.setUser(employeeUser);
         employee.setUpdatedBy(updateUser);
 
         Employee updatedEmployee = employeeRepository.save(employee);

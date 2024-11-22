@@ -14,48 +14,39 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "client")
+@Table(name = "supplier")
 @Where(clause = "deleted = false")
-public class Client {
+public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String name;
-
+    private String cuit;
     private String email;
-
+    private String name;
     private String phone;
-
-    @Column(name = "contact_name")
-    private  String contactName;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    private  String industry;
+    @OneToMany( fetch = FetchType.LAZY,
+                mappedBy = "supplier",
+                cascade = CascadeType.ALL)
+    private List<PaymentCondition> paymentConditions;
 
-    @Column(name = "estimated_transactions_number")
-    private Integer estimatedTransactionsNumber;
-
-    @Column(name = "technologies_used")
-    private String technologiesUsed;
-
-    @Column(name = "remarks")
-    private String remarks;
-
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    private List<ClientInteraction> interactions;
-
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    private List<Sale> sales;
+    @OneToMany( fetch = FetchType.LAZY,
+                mappedBy = "supplier",
+                cascade = CascadeType.ALL)
+    private List<Purchase> purchases;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by")
     private User updatedBy;
+
     private boolean deleted;
 }

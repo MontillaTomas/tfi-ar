@@ -14,20 +14,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale")
+@Table(name = "client_interaction")
 @Where(clause = "deleted = false")
-public class Sale {
+public class ClientInteraction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "sale_date")
-    private LocalDateTime saleDate;
-
-    private String observation;
-
-    @OneToOne(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Invoice invoice;
+    private LocalDateTime date;
+    private String details;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
@@ -36,10 +31,8 @@ public class Sale {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by")
     private User updatedBy;
-
     private boolean deleted;
 }
